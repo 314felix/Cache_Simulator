@@ -26,11 +26,11 @@ void memory_init(void)
   /* L1 Instruction cache */
   l1_instruction_cache = cache_create(
     // Size of the cache (bytes)
-    32 * 1024,
+    4 * 32,
     // Size of the line size (bytes)
-    64,
+    16,
     // n-way associativity
-    4,
+    1,
     // Write Policy: [0] write-back, [1] write-through
     0,
     // Inclusive Policy: [0] exclusive, [1] inclusive
@@ -89,7 +89,31 @@ void memory_fetch(uint32_t* address, data_t *data)
 
   // Converts the double address to uint32_t
   uint32_t adr = (uint32_t)(uintptr_t)address;
+  if (cache_get_block(l1_instruction_cache, adr)){
+    l1_instruction_cache->hits++;
+    cache_update_lru(l1_instruction_cache, adr);
+    return;
+  } 
+  
+  l1_instruction_cache->misses++;
+  block_t *replaced_block = cache_get_replacement_block(l1_instruction_cache, adr);
+  cache_set_block(l1_instruction_cache, adr, replaced_block);
+  cache_update_lru(l1_instruction_cache, adr);
 
+  if (cache_get_block(l2_unfied_cache, adr)){
+    l2_unfied_cache->hits++;
+    cache_update_lru(l2_unfied_cache, adr);
+    return;
+  }
+
+  l2_unfied_cache->misses++;
+  block_t *replaced_block_l2 = cache_get_replacement_block(l2_unfied_cache, adr);
+  cache_set_block(l2_unfied_cache, adr, replaced_block_l2);
+  cache_update_lru(l2_unfied_cache, adr);
+
+
+
+  
   // Instruction Memory
 
 }
@@ -104,6 +128,30 @@ void memory_read(double* address, data_t *data)
 
   // Converts the double address to uint32_t
   uint32_t adr = (uint32_t)(uintptr_t)address;
+
+
+
+  if (cache_get_block(l1_data_cache, adr)){
+    l1_data_cache->hits++;
+    cache_update_lru(l1_data_cache, adr);
+    return;
+  } 
+  
+  l1_data_cache->misses++;
+  block_t *replaced_block = cache_get_replacement_block(l1_data_cache, adr);
+  cache_set_block(l1_data_cache, adr, replaced_block);
+  cache_update_lru(l1_data_cache, adr);
+
+  if (cache_get_block(l2_unfied_cache, adr)){
+    l2_unfied_cache->hits++;
+    cache_update_lru(l2_unfied_cache, adr);
+    return;
+  }
+
+  l2_unfied_cache->misses++;
+  block_t *replaced_block_l2 = cache_get_replacement_block(l2_unfied_cache, adr);
+  cache_set_block(l2_unfied_cache, adr, replaced_block_l2);
+  cache_update_lru(l2_unfied_cache, adr);
 
   // Instruction Memory
 
