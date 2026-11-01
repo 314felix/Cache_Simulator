@@ -3,22 +3,36 @@
 CC = gcc
 CFLAGS = -Wall -Werror -Wno-unused -g -O2
 OBJDIR = obj
+
 PROGRAM = cachesim
+TEST_PROGRAM = cachetest
 
 OBJS = cpu.o memory.o cache.o
-HEADERS = memory.h
+TEST_OBJS = test.o memory.o cache.o
 
-all: $(PROGRAM) $(HEADERS) Makefile
-.PHONY: clean 
+HEADERS = memory.h cache.h
+
+all: $(PROGRAM)
+
+.PHONY: all test clean dirs
 
 dirs:
 	@mkdir -p $(OBJDIR)
 
+# Main program
 $(PROGRAM): $(patsubst %, $(OBJDIR)/%, $(OBJS))
 	$(CC) $(CFLAGS) $^ -o $@ -lm
 
-$(OBJDIR)/%.o: %.c dirs
+# Test program
+$(TEST_PROGRAM): $(patsubst %, $(OBJDIR)/%, $(TEST_OBJS))
+	$(CC) $(CFLAGS) $^ -o $@ -lm
+
+# Compile test program
+test: $(TEST_PROGRAM)
+
+# Compile object files
+$(OBJDIR)/%.o: %.c $(HEADERS) | dirs
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -rf *.o *~ $(PROGRAM) $(OBJDIR)
+	rm -rf *.o *~ $(PROGRAM) $(TEST_PROGRAM) $(OBJDIR)
