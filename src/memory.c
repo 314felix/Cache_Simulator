@@ -26,11 +26,11 @@ void memory_init(void)
   /* L1 Instruction cache */
   l1_instruction_cache = cache_create(
     // Size of the cache (bytes)
-    4 * 32,
+    4 * 64,
     // Size of the line size (bytes)
     16,
     // n-way associativity
-    1,
+    2,
     // Write Policy: [0] write-back, [1] write-through
     0,
     // Inclusive Policy: [0] exclusive, [1] inclusive
@@ -178,6 +178,10 @@ void memory_finish(void)
   print_cache_statistics(l1_instruction_cache, "L1 Instruction cache");
   print_cache_statistics(l1_data_cache, "L1 Data cache");
   print_cache_statistics(l2_unfied_cache, "L2 Unified cache");
+
+  record_cache_results(l1_instruction_cache, "L1 Instruction cache");
+  record_cache_results(l1_data_cache, "L1 Data cache");
+  record_cache_results(l2_unfied_cache, "L2 Unified cache");
 
   // Deinitialize memory subsystem here
   cache_destroy(l1_instruction_cache);

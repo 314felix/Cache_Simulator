@@ -164,6 +164,100 @@ void print_cache_statistics(cache_t *cache, char *name) {
     printf("\033[094m - Cache writes: \033[091m %i\033[0m\n\n", (cache->writes));
 }
 
+
+
+
+
+void record_cache_results(cache_t *cache, const char *name) {
+
+    FILE *file;
+    
+    /* Open the CSV file in append mode */
+    file = fopen("cache_results.csv", "a");
+
+    if (file == NULL) {
+        perror("Error opening cache_results.csv");
+        return;
+    }
+
+    /* Write the header if the file is empty */
+    fseek(file, 0, SEEK_END);
+
+    if (ftell(file) == 0) {
+        fprintf(file,
+            "name,associativity,replacement_policy,write_policy,"
+            "cache_size_KB,line_size,blocks,sets,hits,misses,writes\n");
+    }
+
+    /* Determine cache associativity */
+    const char *associativity;
+
+    if (cache->nBlocks / cache->nSets == 1) {
+        associativity = "Direct mapped";
+    } else if (cache->nSets == 1) {
+        associativity = "Fully associative";
+    } else {
+        /* Handle n-way associativity separately below */
+        associativity = NULL;
+    }
+
+    /* Determine replacement policy */
+    const char *replacement;
+
+    if (cache->replacementPolicy == 0) {
+        replacement = "random";
+    } else if (cache->replacementPolicy == 1) {
+        replacement = "LRU";
+    } else {
+        replacement = "temporal/spatial";
+    }
+
+    /* Determine write policy */
+    const char *write_policy;
+
+    if (cache->writePolicy == 0) {
+        write_policy = "write-back";
+    } else {
+        write_policy = "write-through";
+    }
+
+    /* Calculate cache size */
+    float cache_size = (float)(cache->nBlocks * cache->lineSize) / 1024;
+
+    /* Write the cache configuration and statistics */
+    if (associativity != NULL) {
+        fprintf(file, "%s,%s,%s,%s,%.1f,%d,%d,%d,%d,%d,%d\n",
+            name,
+            associativity,
+            replacement,
+            write_policy,
+            cache_size,
+            cache->lineSize,
+            cache->nBlocks,
+            cache->nSets,
+            cache->hits,
+            cache->misses,
+            cache->writes);
+    } else {
+        fprintf(file, "%s,%d-way,%s,%s,%.1f,%d,%d,%d,%d,%d,%d\n",
+            name,
+            cache->nBlocks / cache->nSets,
+            replacement,
+            write_policy,
+            cache_size,
+            cache->lineSize,
+            cache->nBlocks,
+            cache->nSets,
+            cache->hits,
+            cache->misses,
+            cache->writes);
+    }
+
+    fclose(file);
+}
+
+
+
 uint32_t cache_get_index(cache_t *cache, uint32_t address) {
     /* Calculates the cache index from the address */
 

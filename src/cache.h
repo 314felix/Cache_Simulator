@@ -75,6 +75,13 @@ void print_cache_parameters(cache_t *cache, char *name);
  */
 void print_cache_statistics(cache_t *cache, char *name);
 
+/** Write the cache configuration and statistics to a CSV file
+ * 
+ *  @param[in] cache Cache to be written
+ *  @param[in] name Name of the cache
+ */
+void record_cache_results(cache_t *cache, const char *name);
+
 /** Calculates the cache index from the address
  * 
  * @param[in] cache Cach the index is created for
