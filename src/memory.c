@@ -26,11 +26,11 @@ void memory_init(void)
   /* L1 Instruction cache */
   l1_instruction_cache = cache_create(
     // Size of the cache (bytes)
-    4 * 32,
+    4 * 64,
     // Size of the line size (bytes)
     16,
     // n-way associativity
-    1,
+    2,
     // Write Policy: [0] write-back, [1] write-through
     0,
     // Replacement Policy: [0] random, [1] LRU, [2] temporal/spatial
@@ -126,11 +126,54 @@ void memory_read(double* address, data_t *data)
   } 
   
   l1_data_cache->misses++;
-  block_t *replaced_block = cache_get_replacement_block(l1_data_cache, adr);
-  cache_set_block(l1_data_cache, adr, replaced_block);
+  block_t *replacement_block = cache_get_replacement_block(l1_data_cache, adr);
+  if (replacement_block->dirty == 1) {
+    
+    // Replacement block is dirty, lower levels must be updated
+    uint32_t tag   = replacement_block->tag;
+    uint32_t index = cache_get_index(l1_data_cache, adr);
+    
+    uint32_t old_adr = cache_reconstruct_address(l1_data_cache, index, tag);
+    
+    block_t *l2_block = cache_get_block(l2_unfied_cache, old_adr);
+    if (l2_block != NULL) {
+    // L2 unfied cache - Cache hit
+    
+    l2_unfied_cache->hits++;
+    /*The block is not actually written according with the
+    simplifications. But the action is registered as a write.
+    Writing to level 3 memory is not simulated. */
+    l2_unfied_cache->writes++;
+          
+    
+    cache_update_lru(l2_unfied_cache, old_adr);
+    if (l2_unfied_cache->writePolicy == 0) {
+      l2_block->dirty = 1;
+      
+    }
+    // L2 unfied cache - Cache miss
+  } else {
+    l2_unfied_cache->writes++;
+    l2_unfied_cache->misses++;
+    
+    block_t *l2_replacement_block = cache_get_replacement_block(l2_unfied_cache, old_adr);
+    cache_set_block(l2_unfied_cache, old_adr, l2_replacement_block);
+    cache_update_lru(l2_unfied_cache, old_adr);
+
+    if (l2_unfied_cache->writePolicy == 0) {
+      l2_replacement_block->dirty = 1;
+    }
+  }
+}
+        
+     
+
+  
+  cache_set_block(l1_data_cache, adr, replacement_block);
   cache_update_lru(l1_data_cache, adr);
 
-  if (cache_get_block(l2_unfied_cache, adr)){
+  block_t *l2_block = cache_get_block(l2_unfied_cache, adr);
+  if (l2_block != NULL) {
     l2_unfied_cache->hits++;
     cache_update_lru(l2_unfied_cache, adr);
     return;
@@ -285,6 +328,10 @@ void memory_finish(void)
   print_cache_statistics(l1_instruction_cache, "L1 Instruction cache");
   print_cache_statistics(l1_data_cache, "L1 Data cache");
   print_cache_statistics(l2_unfied_cache, "L2 Unified cache");
+
+  record_cache_results(l1_instruction_cache, "L1 Instruction cache");
+  record_cache_results(l1_data_cache, "L1 Data cache");
+  record_cache_results(l2_unfied_cache, "L2 Unified cache");
 
   // Deinitialize memory subsystem here
   cache_destroy(l1_instruction_cache);
