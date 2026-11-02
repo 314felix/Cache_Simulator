@@ -5,6 +5,9 @@
 
 #include <stdint.h>
 
+#ifndef CACHE_H
+#define CACHE_H
+
 /* block_t represent a cache block which make up the cache.
 The data is not stored according with the simplification in README
 */
@@ -27,7 +30,6 @@ struct set {
     int index;
 };
 
-
 /* cache_t represent the cache made up of blocks.
 It keeps track of hits, misses and writes
 */
@@ -35,7 +37,6 @@ typedef struct cache cache_t;
 struct cache {
     set_t *sets;
     int replacementPolicy;
-    int inclusivePolicy;
     int writePolicy;
     int lineSize;
     int nBlocks;
@@ -51,11 +52,10 @@ struct cache {
  *  @param[in]  lineSize Size of the line size
  *  @param[in]  nWays n-way associativity
  *  @param[in]  writePolicy [0] write-back, [1] write-through
- *  @param[in]  inclusivePolicy [0] exclusive, [1] inclusive
  *  @param[in]  replacementPolicy [0] random, [1] LRU, [2] temporal/spatial
  *  @param[out] cache Newly created cache
  */
-cache_t *cache_create(int cacheSize, int lineSize, int nWays, int writePolicy, int inclusivePolicy, int replacementPolicy);
+cache_t *cache_create(int cacheSize, int lineSize, int nWays, int writePolicy, int replacementPolicy);
 
 /** Removes the cache from memory
  * 
@@ -129,3 +129,14 @@ void cache_update_lru(cache_t *cache, uint32_t address);
  * @param[in] block Block to be updated
  */
 void cache_set_block(cache_t *cache, uint32_t address, block_t *block);
+
+/** Reconstructs parts of the address from the index and the tag
+ * 
+ * @param[in] cache Cache used to calculate the tag and index size
+ * @param[in] index Index used to reconstruct the address
+ * @param[in] tag Tag used to reconstruct the address
+ * @param[out] address Reconstructed address
+ */
+uint32_t cache_reconstruct_address(cache_t *cache, uint32_t index, uint32_t tag);
+
+#endif
