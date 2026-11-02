@@ -126,11 +126,54 @@ void memory_read(double* address, data_t *data)
   } 
   
   l1_data_cache->misses++;
-  block_t *replaced_block = cache_get_replacement_block(l1_data_cache, adr);
-  cache_set_block(l1_data_cache, adr, replaced_block);
+  block_t *replacement_block = cache_get_replacement_block(l1_data_cache, adr);
+  if (replacement_block->dirty == 1) {
+    
+    // Replacement block is dirty, lower levels must be updated
+    uint32_t tag   = replacement_block->tag;
+    uint32_t index = cache_get_index(l1_data_cache, adr);
+    
+    uint32_t old_adr = cache_reconstruct_address(l1_data_cache, index, tag);
+    
+    block_t *l2_block = cache_get_block(l2_unfied_cache, old_adr);
+    if (l2_block != NULL) {
+    // L2 unfied cache - Cache hit
+    
+    l2_unfied_cache->hits++;
+    /*The block is not actually written according with the
+    simplifications. But the action is registered as a write.
+    Writing to level 3 memory is not simulated. */
+    l2_unfied_cache->writes++;
+          
+    
+    cache_update_lru(l2_unfied_cache, old_adr);
+    if (l2_unfied_cache->writePolicy == 0) {
+      l2_block->dirty = 1;
+      
+    }
+    // L2 unfied cache - Cache miss
+  } else {
+    l2_unfied_cache->writes++;
+    l2_unfied_cache->misses++;
+    
+    block_t *l2_replacement_block = cache_get_replacement_block(l2_unfied_cache, old_adr);
+    cache_set_block(l2_unfied_cache, old_adr, l2_replacement_block);
+    cache_update_lru(l2_unfied_cache, old_adr);
+
+    if (l2_unfied_cache->writePolicy == 0) {
+      l2_replacement_block->dirty = 1;
+    }
+  }
+}
+        
+     
+
+  
+  cache_set_block(l1_data_cache, adr, replacement_block);
   cache_update_lru(l1_data_cache, adr);
 
-  if (cache_get_block(l2_unfied_cache, adr)){
+  block_t *l2_block = cache_get_block(l2_unfied_cache, adr);
+  if (l2_block != NULL) {
     l2_unfied_cache->hits++;
     cache_update_lru(l2_unfied_cache, adr);
     return;
