@@ -6,17 +6,11 @@
 #include <math.h>
 #include "cache.h"
 
-cache_t *cache_create(int cacheSize, int lineSize, int nWays, int writePolicy, int inclusivePolicy, int replacementPolicy) {
+cache_t *cache_create(int cacheSize, int lineSize, int nWays, int writePolicy, int replacementPolicy) {
     /*Creates a new cache*/
 
     if (cacheSize <= 0 || lineSize <= 0 || nWays <= 0) {
         printf("\033[31mERROR: Cache size, line size and number of ways must be grater then zero.\n\n\033[0m");
-        exit(EXIT_FAILURE);
-    }
-
-
-    if (inclusivePolicy != 0 && inclusivePolicy != 1) {
-        printf("\033[31mERROR: Inclusive policy must be set to either 0 [exclusive] or 1 [inclusive].\n\n\033[0m");
         exit(EXIT_FAILURE);
     }
 
@@ -90,7 +84,6 @@ cache_t *cache_create(int cacheSize, int lineSize, int nWays, int writePolicy, i
     }
 
     cache->replacementPolicy = replacementPolicy;
-    cache->inclusivePolicy = inclusivePolicy;
     cache->writePolicy = writePolicy;
     cache->lineSize = lineSize;
     cache->nBlocks = nBlocks;
@@ -125,7 +118,7 @@ void print_cache_parameters(cache_t *cache, char *name) {
     printf("\033[032m - Cache associativity: \033[0m");
 
     if (cache->nBlocks / cache->nSets == 1) {
-        printf("\033[036mDirect mapped\033[0m\n\n");
+        printf("\033[036mDirect mapped\033[0m\n");
     } else if (cache->nSets == 1) {
         printf("\033[036mFully associative\033[0m\n");
     } else {
@@ -263,7 +256,6 @@ uint32_t cache_get_index(cache_t *cache, uint32_t address) {
 
     int index_size = log2(cache->nSets);
     int tag_size   = 32 - (index_size + (log2(cache->lineSize) - 2) + 2);
-    uint32_t tag   = (address >> (32 - tag_size));
     uint32_t index = (address >> (32 - tag_size - index_size) & (cache->nSets - 1));
 
     return index;
@@ -296,7 +288,6 @@ set_t *cache_get_set(cache_t *cache, uint32_t address) {
 block_t *cache_get_block(cache_t *cache, uint32_t address) {
     /* Search for block set in the cache, based on the address */
 
-    int index = cache_get_index(cache, address);
     int tag   = cache_get_tag(cache, address);
 
     set_t *set = cache_get_set(cache, address);
@@ -359,7 +350,6 @@ block_t *cache_get_replacement_block(cache_t *cache, uint32_t address) {
 void cache_update_lru(cache_t *cache, uint32_t address) {
     /* Increase the LRU of all blocks, except the block for the current address.  */
 
-    int index = cache_get_index(cache, address);
     int tag   = cache_get_tag(cache, address);
 
     set_t *set = cache_get_set(cache, address);
@@ -393,4 +383,17 @@ void cache_set_block(cache_t *cache, uint32_t address, block_t *block) {
     block->lastUsed = 0;
     block->valid = 1;
     block->tag = tag;
+    block->dirty = 0;
+}
+
+uint32_t cache_reconstruct_address(cache_t *cache, uint32_t index, uint32_t tag) {
+    /* Reconstructs parts of the address from the index and the tag */
+
+    // get index and tag size
+    int index_size = log2(cache->nSets);
+    int offset_size = log2(cache->lineSize);
+
+    uint32_t address = (tag << (index_size + offset_size)) | (index << offset_size);
+
+    return address;
 }
