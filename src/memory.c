@@ -26,7 +26,7 @@ void memory_init(void)
   /* L1 Instruction cache */
   l1_instruction_cache = cache_create(
     // Size of the cache (bytes)
-    4 * 64,
+    4 * 1024,
     // Size of the line size (bytes)
     16,
     // n-way associativity
@@ -34,7 +34,7 @@ void memory_init(void)
     // Write Policy: [0] write-back, [1] write-through
     0,
     // Replacement Policy: [0] random, [1] LRU, [2] temporal/spatial
-    0
+    1
   );
 
   /* L1 Data cache */
@@ -62,7 +62,7 @@ void memory_init(void)
     // Write Policy: [0] write-back, [1] write-through
     0,
     // Replacement Policy: [0] random, [1] LRU, [2] temporal/spatial
-    0
+    1
   );
 
   // print cache parameters
