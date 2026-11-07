@@ -7,6 +7,7 @@
 #include "memory.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
 #include "cache.h"
@@ -20,57 +21,67 @@ static cache_t *l2_unfied_cache = NULL;
 
 void memory_init(void)
 {
-  /* Initialize memory subsystem here. */
-  printf("Initializing memory subsystem\n\n");
+    printf("Initializing memory subsystem\n\n");
 
-  /* L1 Instruction cache */
-  l1_instruction_cache = cache_create(
-    // Size of the cache (bytes)
-    4 * 1024,
-    // Size of the line size (bytes)
-    16,
-    // n-way associativity
-    2,
-    // Write Policy: [0] write-back, [1] write-through
-    0,
-    // Replacement Policy: [0] random, [1] LRU, [2] temporal/spatial
-    1
-  );
+    FILE *config = fopen("cache_config.txt", "r");
 
-  /* L1 Data cache */
-  l1_data_cache = cache_create(
-    // Size of the cache (bytes)
-    32 * 1024,
-    // Size of the line size (bytes)
-    64,
-    // n-way associativity
-    8,
-    // Write Policy: [0] write-back, [1] write-through
-    0,
-    // Replacement Policy: [0] random, [1] LRU, [2] temporal/spatial
-    1
-  );
+    if (config == NULL) {
+        perror("Failed to open cache configuration");
+        return;
+    }
 
-  /* L2 Unified cache */
-  l2_unfied_cache = cache_create(
-    // Size of the cache (bytes)
-    512 * 1024,
-    // Size of the line size (bytes)
-    64,
-    // n-way associativity
-    8,
-    // Write Policy: [0] write-back, [1] write-through
-    0,
-    // Replacement Policy: [0] random, [1] LRU, [2] temporal/spatial
-    1
-  );
+    int size, line_size, associativity;
+    int write_policy, replacement_policy;
 
-  // print cache parameters
-  print_cache_parameters(l1_instruction_cache, "L1 Instruction cache");
-  print_cache_parameters(l1_data_cache, "L1 Data cache");
-  print_cache_parameters(l2_unfied_cache, "L2 Unified cache");
+    // L1 Instruction Cache
+   if (fscanf(config, "%d %d %d %d %d",
+           &size, &line_size, &associativity,
+           &write_policy, &replacement_policy) != 5) {
+    fprintf(stderr, "Error: Invalid cache configuration\n");
+    fclose(config);
+    exit(EXIT_FAILURE);
+}
 
-  instr_count = 0;
+    l1_instruction_cache = cache_create(
+        size, line_size, associativity,
+        write_policy, replacement_policy
+    );
+
+    // L1 Data Cache
+   if (fscanf(config, "%d %d %d %d %d",
+           &size, &line_size, &associativity,
+           &write_policy, &replacement_policy) != 5) {
+    fprintf(stderr, "Error: Invalid cache configuration\n");
+    fclose(config);
+    exit(EXIT_FAILURE);
+}
+
+    l1_data_cache = cache_create(
+        size, line_size, associativity,
+        write_policy, replacement_policy
+    );
+
+    // L2 Unified Cache
+   if (fscanf(config, "%d %d %d %d %d",
+           &size, &line_size, &associativity,
+           &write_policy, &replacement_policy) != 5) {
+    fprintf(stderr, "Error: Invalid cache configuration\n");
+    fclose(config);
+    exit(EXIT_FAILURE);
+}
+
+    l2_unfied_cache = cache_create(
+        size, line_size, associativity,
+        write_policy, replacement_policy
+    );
+
+    fclose(config);
+
+    print_cache_parameters(l1_instruction_cache, "L1 Instruction cache");
+    print_cache_parameters(l1_data_cache, "L1 Data cache");
+    print_cache_parameters(l2_unfied_cache, "L2 Unified cache");
+
+    instr_count = 0;
 }
 
 void memory_fetch(uint32_t* address, data_t *data)
