@@ -1,0 +1,25 @@
+name,associativity,replacement_policy,write_policy,cache_size_KB,line_size,blocks,sets,hits,misses,writes
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,8-way,LRU,write-back,32.0,16,2048,256,50171264,16937600,16777216
+L2 Unified cache,8-way,LRU,write-back,512.0,64,8192,1024,15716336,1253906,32640
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,8-way,LRU,write-back,32.0,32,1024,128,50218238,16890626,16777216
+L2 Unified cache,8-way,LRU,write-back,512.0,64,8192,1024,15942536,964413,16321
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,8-way,LRU,write-back,32.0,64,512,64,50241022,16867842,16777216
+L2 Unified cache,8-way,LRU,write-back,512.0,64,8192,1024,16049465,826540,8161
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,8-way,LRU,write-back,32.0,128,256,32,50250750,16858114,16777216
+L2 Unified cache,8-way,LRU,write-back,512.0,64,8192,1024,16436777,425420,4081
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,8-way,LRU,write-back,32.0,64,512,64,50241022,16867842,16777216
+L2 Unified cache,8-way,LRU,write-back,512.0,16,32768,4096,16478280,397725,8161
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,8-way,LRU,write-back,32.0,64,512,64,50241022,16867842,16777216
+L2 Unified cache,8-way,LRU,write-back,512.0,32,16384,2048,16345177,530828,8161
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,8-way,LRU,write-back,32.0,64,512,64,50241022,16867842,16777216
+L2 Unified cache,8-way,LRU,write-back,512.0,64,8192,1024,16049465,826540,8161
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,8-way,LRU,write-back,32.0,64,512,64,50241022,16867842,16777216
+L2 Unified cache,8-way,LRU,write-back,512.0,128,4096,512,16086464,789541,8161

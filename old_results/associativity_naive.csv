@@ -1,0 +1,31 @@
+name,associativity,replacement_policy,write_policy,cache_size_KB,line_size,blocks,sets,hits,misses,writes
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,Direct mapped,LRU,write-back,32.0,64,512,512,48253296,18855568,16777216
+L2 Unified cache,8-way,LRU,write-back,512.0,64,8192,1024,19707479,690106,1542015
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,2-way,LRU,write-back,32.0,64,512,256,50240990,16867874,16777216
+L2 Unified cache,8-way,LRU,write-back,512.0,64,8192,1024,16049449,826588,8161
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,4-way,LRU,write-back,32.0,64,512,128,50240830,16868034,16777216
+L2 Unified cache,8-way,LRU,write-back,512.0,64,8192,1024,16049545,826652,8161
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,8-way,LRU,write-back,32.0,64,512,64,50241022,16867842,16777216
+L2 Unified cache,8-way,LRU,write-back,512.0,64,8192,1024,16049465,826540,8161
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,16-way,LRU,write-back,32.0,64,512,32,50241278,16867586,16777216
+L2 Unified cache,8-way,LRU,write-back,512.0,64,8192,1024,16049321,826428,8161
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,8-way,LRU,write-back,32.0,64,512,64,50241022,16867842,16777216
+L2 Unified cache,Direct mapped,LRU,write-back,512.0,64,8192,8192,16684233,191772,8161
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,8-way,LRU,write-back,32.0,64,512,64,50241022,16867842,16777216
+L2 Unified cache,2-way,LRU,write-back,512.0,64,8192,4096,16596563,279442,8161
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,8-way,LRU,write-back,32.0,64,512,64,50241022,16867842,16777216
+L2 Unified cache,4-way,LRU,write-back,512.0,64,8192,2048,16415181,460824,8161
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,8-way,LRU,write-back,32.0,64,512,64,50241022,16867842,16777216
+L2 Unified cache,8-way,LRU,write-back,512.0,64,8192,1024,16049465,826540,8161
+L1 Instruction cache,2-way,LRU,write-back,4.0,16,256,128,83951871,2,0
+L1 Data cache,8-way,LRU,write-back,32.0,64,512,64,50241022,16867842,16777216
+L2 Unified cache,16-way,LRU,write-back,512.0,64,8192,512,15316976,1559029,8161
