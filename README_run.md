@@ -1,0 +1,2 @@
+To run this code the make rules from the precode can be used. 
+The cache configuration can be set in the file cache_configuration (branch origin/feat_testing) done so for automation of benchmarking. The working version of the code can be run on branch main with the delcaration in the file memory.c in the same way.
