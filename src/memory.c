@@ -329,9 +329,6 @@ void memory_finish(void)
   print_cache_statistics(l1_data_cache, "L1 Data cache");
   print_cache_statistics(l2_unfied_cache, "L2 Unified cache");
 
-  record_cache_results(l1_instruction_cache, "L1 Instruction cache");
-  record_cache_results(l1_data_cache, "L1 Data cache");
-  record_cache_results(l2_unfied_cache, "L2 Unified cache");
 
   // Deinitialize memory subsystem here
   cache_destroy(l1_instruction_cache);
